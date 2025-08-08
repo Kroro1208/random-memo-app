@@ -1,0 +1,199 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Custom styles for the memo app */
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    height: 100%;
+  }
+
+  body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #374151;
+    background-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    height: 100%;
+    width: 100%;
+  }
+
+  /* Dark mode support */
+  .dark body {
+    color: #e5e7eb;
+  }
+}
+
+@layer components {
+  /* Memo component styles */
+  .memo-item {
+    @apply absolute bg-yellow-200 border border-yellow-300 rounded-lg shadow-memo cursor-move select-none;
+    @apply hover:shadow-memo-hover transition-shadow duration-200;
+    min-width: 50px;
+    min-height: 50px;
+    resize: both;
+    overflow: hidden;
+  }
+
+  .memo-item:focus-within {
+    @apply shadow-memo-focus ring-2 ring-primary-400 ring-opacity-20;
+  }
+
+  .memo-item.dragging {
+    @apply opacity-70 z-50;
+  }
+
+  .memo-item.pinned::before {
+    content: '📌';
+    @apply absolute top-1 right-1 text-xs opacity-70;
+  }
+
+  .memo-content {
+    @apply w-full h-full p-2 bg-transparent border-none outline-none resize-none;
+    @apply text-sm leading-relaxed;
+  }
+
+  /* Priority colors */
+  .memo-priority-1 { @apply bg-gray-200 border-gray-300; }
+  .memo-priority-2 { @apply bg-green-200 border-green-300; }
+  .memo-priority-3 { @apply bg-yellow-200 border-yellow-300; }
+  .memo-priority-4 { @apply bg-orange-200 border-orange-300; }
+  .memo-priority-5 { @apply bg-red-200 border-red-300; }
+
+  /* Dark mode memo styles */
+  .dark .memo-priority-1 { @apply bg-gray-700 border-gray-600 text-gray-200; }
+  .dark .memo-priority-2 { @apply bg-green-800 border-green-700 text-green-100; }
+  .dark .memo-priority-3 { @apply bg-yellow-800 border-yellow-700 text-yellow-100; }
+  .dark .memo-priority-4 { @apply bg-orange-800 border-orange-700 text-orange-100; }
+  .dark .memo-priority-5 { @apply bg-red-800 border-red-700 text-red-100; }
+
+  /* Button styles */
+  .btn {
+    @apply px-3 py-2 rounded-md font-medium transition-colors duration-200;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-700;
+  }
+
+  .btn-secondary {
+    @apply btn bg-gray-200 text-gray-800 hover:bg-gray-300;
+    @apply dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-gray-600 hover:bg-gray-100;
+    @apply dark:text-gray-400 dark:hover:bg-gray-800;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200;
+    @apply dark:bg-gray-800 dark:border-gray-700;
+  }
+
+  /* Input styles */
+  .input {
+    @apply px-3 py-2 border border-gray-300 rounded-md bg-white;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply dark:bg-gray-800 dark:border-gray-600 dark:text-white;
+  }
+
+  /* Preview popup styles */
+  .memo-preview {
+    @apply absolute z-50 max-w-xs p-3 bg-white border border-gray-200 rounded-lg shadow-lg;
+    @apply dark:bg-gray-800 dark:border-gray-600;
+    pointer-events: none;
+  }
+
+  /* License limit indicator */
+  .license-indicator {
+    @apply text-xs px-2 py-1 bg-orange-100 text-orange-800 rounded-full;
+    @apply dark:bg-orange-900 dark:text-orange-200;
+  }
+
+  /* Upgrade prompt styles */
+  .upgrade-prompt {
+    @apply fixed bottom-4 right-4 max-w-sm p-4 bg-blue-50 border border-blue-200 rounded-lg shadow-lg;
+    @apply dark:bg-blue-900 dark:border-blue-700;
+    @apply animate-slide-up;
+  }
+}
+
+@layer utilities {
+  /* Custom utility classes */
+  .drag-handle {
+    cursor: grab;
+  }
+
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  /* Scrollbar styles */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-500;
+  }
+}
+
+/* Animation styles */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bounceSubtle {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Font loading */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');

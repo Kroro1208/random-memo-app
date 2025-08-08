@@ -1,0 +1,152 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./memo-app.db"
+}
+
+model Memo {
+  id String @id @default(uuid())
+  
+  // Content
+  content String @default("")
+  
+  // Position & Size
+  x      Int @default(100)
+  y      Int @default(100)
+  width  Int @default(200)
+  height Int @default(150)
+  
+  // Display Settings
+  opacity     Float   @default(1.0)
+  alwaysOnTop Boolean @default(false)
+  pinned      Boolean @default(false)
+  
+  // Style Settings
+  priority        Int    @default(3)
+  backgroundColor String @default("#FFEB3B")
+  textColor       String @default("#000000")
+  fontSize        Int    @default(14)
+  
+  // Timestamps & Metadata
+  dueDate   DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  isDeleted Boolean   @default(false)
+  
+  // Relations
+  tags MemoTag[]
+  
+  @@map("memos")
+}
+
+model Tag {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  color String @default("#808080")
+  
+  createdAt DateTime @default(now())
+  
+  // Relations
+  memos MemoTag[]
+  
+  @@map("tags")
+}
+
+model MemoTag {
+  memoId String
+  tagId  Int
+  
+  createdAt DateTime @default(now())
+  
+  // Relations
+  memo Memo @relation(fields: [memoId], references: [id], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  
+  @@id([memoId, tagId])
+  @@map("memo_tags")
+}
+
+model Settings {
+  key         String @id
+  value       String
+  type        String // 'string', 'number', 'boolean', 'object', 'array'
+  description String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("settings")
+}
+
+model License {
+  id           Int     @id @default(autoincrement())
+  licenseKey   String? @unique
+  licenseType  String  @default("free") // 'free', 'standard', 'student', 'enterprise'
+  
+  activationDate    DateTime?
+  lastVerification  DateTime?
+  gracePeriodStart  DateTime?
+  deviceId          String
+  userEmail         String?
+  isValid           Boolean   @default(true)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("license")
+}
+
+model LicenseLimit {
+  licenseType         String @id
+  maxMemos           Int    @default(-1) // -1 = unlimited
+  maxConcurrentMemos Int    @default(-1) // -1 = unlimited
+  featuresEnabled    String @default("[]") // JSON array
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("license_limits")
+}
+
+model UpgradePrompt {
+  id              Int      @id @default(autoincrement())
+  promptType      String   // 'subtle', 'modal', 'banner'
+  featureTriggered String?
+  shownAt         DateTime @default(now())
+  userAction      String?  // 'dismissed', 'upgraded', 'later', 'never_show'
+  
+  @@map("upgrade_prompts")
+}
+
+model FeatureUsageStat {
+  id          Int      @id @default(autoincrement())
+  featureName String
+  usageCount  Int      @default(1)
+  lastUsedAt  DateTime @default(now())
+  licenseType String
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([featureName, licenseType])
+  @@map("feature_usage_stats")
+}
+
+model BackupMetadata {
+  id         Int      @id @default(autoincrement())
+  backupPath String
+  memoCount  Int      @default(0)
+  fileSize   Int      @default(0) // bytes
+  checksum   String   // SHA-256
+  
+  createdAt DateTime @default(now())
+  
+  @@unique([backupPath, createdAt])
+  @@map("backup_metadata")
+}
