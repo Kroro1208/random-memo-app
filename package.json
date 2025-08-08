@@ -39,17 +39,17 @@
   "dependencies": {
     "@prisma/client": "^5.7.0",
     "better-sqlite3": "^9.2.2",
+    "date-fns": "^3.0.6",
     "electron-updater": "^6.1.7",
     "framer-motion": "^10.16.16",
     "immer": "^10.0.3",
+    "nanoid": "^5.0.4",
     "react": "^19.0.0-rc.0",
     "react-dom": "^19.0.0-rc.0",
     "react-hook-form": "^7.48.2",
-    "zustand": "^4.4.7",
-    "zod": "^3.22.4",
-    "date-fns": "^3.0.6",
     "uuid": "^9.0.1",
-    "nanoid": "^5.0.4"
+    "zod": "^3.22.4",
+    "zustand": "^4.4.7"
   },
   "devDependencies": {
     "@electron/notarize": "^2.2.1",
@@ -61,7 +61,7 @@
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "@vitejs/plugin-react": "^4.2.1",
-    "@vitest/ui": "^1.1.0",
+    "@vitest/ui": "^1.6.1",
     "autoprefixer": "^10.4.16",
     "concurrently": "^8.2.2",
     "electron": "^28.1.0",
@@ -73,6 +73,7 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "husky": "^8.0.3",
     "lint-staged": "^15.2.0",
+    "playwright": "^1.40.1",
     "postcss": "^8.4.32",
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.9",
@@ -81,8 +82,7 @@
     "tsx": "^4.6.2",
     "typescript": "^5.3.3",
     "vite": "^5.0.10",
-    "vitest": "^1.1.0",
-    "playwright": "^1.40.1"
+    "vitest": "^1.6.1"
   },
   "build": {
     "appId": "com.yourcompany.random-memo-app",
@@ -112,7 +112,10 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64", "ia32"]
+          "arch": [
+            "x64",
+            "ia32"
+          ]
         }
       ],
       "publisherName": "Your Company Name"
@@ -121,11 +124,15 @@
       "target": [
         {
           "target": "AppImage",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         },
         {
           "target": "deb",
-          "arch": ["x64"]
+          "arch": [
+            "x64"
+          ]
         }
       ],
       "category": "Office"

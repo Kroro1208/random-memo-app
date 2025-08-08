@@ -20,15 +20,15 @@ describe('LicenseService - Core Functionality', () => {
 
   beforeAll(() => {
     // Setup mock for DatabaseService
-    mockDatabaseService = new DatabaseService() as jest.Mocked<DatabaseService>
-    mockDatabaseService.getMemoCount = jest.fn()
-    mockDatabaseService.initialize = jest.fn()
-    mockDatabaseService.healthCheck = jest.fn()
+    mockDatabaseService = new DatabaseService()
+    mockDatabaseService.getMemoCount = vi.fn()
+    mockDatabaseService.initialize = vi.fn()
+    mockDatabaseService.healthCheck = vi.fn()
   })
 
   beforeEach(async () => {
     // Reset all mocks
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     
     // Create fresh LicenseService instance
     licenseService = new LicenseService(mockDatabaseService)
@@ -146,14 +146,14 @@ describe('LicenseService - License Activation and Validation', () => {
   let mockDatabaseService: any
 
   beforeAll(() => {
-    mockDatabaseService = new DatabaseService() as jest.Mocked<DatabaseService>
-    mockDatabaseService.getMemoCount = jest.fn()
-    mockDatabaseService.initialize = jest.fn()
-    mockDatabaseService.healthCheck = jest.fn()
+    mockDatabaseService = new DatabaseService();
+    mockDatabaseService.getMemoCount = vi.fn()
+    mockDatabaseService.initialize = vi.fn()
+    mockDatabaseService.healthCheck = vi.fn()
   })
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     licenseService = new LicenseService(mockDatabaseService)
     mockDatabaseService.getMemoCount.mockResolvedValue(0)
     mockDatabaseService.healthCheck.mockResolvedValue(true)
@@ -321,14 +321,14 @@ describe('LicenseService - Freemium Model Enforcement', () => {
   let mockDatabaseService: any
 
   beforeAll(() => {
-    mockDatabaseService = new DatabaseService() as jest.Mocked<DatabaseService>
-    mockDatabaseService.getMemoCount = jest.fn()
-    mockDatabaseService.initialize = jest.fn()
-    mockDatabaseService.healthCheck = jest.fn()
+    mockDatabaseService = new DatabaseService();
+    mockDatabaseService.getMemoCount = vi.fn()
+    mockDatabaseService.initialize = vi.fn()
+    mockDatabaseService.healthCheck = vi.fn()
   })
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     licenseService = new LicenseService(mockDatabaseService)
     mockDatabaseService.healthCheck.mockResolvedValue(true)
     await licenseService.initialize()
@@ -497,14 +497,14 @@ describe('LicenseService - Feature Gate System', () => {
   let mockDatabaseService: any
 
   beforeAll(() => {
-    mockDatabaseService = new DatabaseService() as jest.Mocked<DatabaseService>
-    mockDatabaseService.getMemoCount = jest.fn()
-    mockDatabaseService.initialize = jest.fn()
-    mockDatabaseService.healthCheck = jest.fn()
+    mockDatabaseService = new DatabaseService();
+    mockDatabaseService.getMemoCount = vi.fn()
+    mockDatabaseService.initialize = vi.fn()
+    mockDatabaseService.healthCheck = vi.fn()
   })
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     licenseService = new LicenseService(mockDatabaseService)
     mockDatabaseService.getMemoCount.mockResolvedValue(0)
     mockDatabaseService.healthCheck.mockResolvedValue(true)
@@ -595,14 +595,14 @@ describe('LicenseService - Error Handling and Edge Cases', () => {
   let mockDatabaseService: any
 
   beforeAll(() => {
-    mockDatabaseService = new DatabaseService() as jest.Mocked<DatabaseService>
-    mockDatabaseService.getMemoCount = jest.fn()
-    mockDatabaseService.initialize = jest.fn()
-    mockDatabaseService.healthCheck = jest.fn()
+    mockDatabaseService = new DatabaseService();
+    mockDatabaseService.getMemoCount = vi.fn()
+    mockDatabaseService.initialize = vi.fn()
+    mockDatabaseService.healthCheck = vi.fn()
   })
 
   beforeEach(async () => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
     licenseService = new LicenseService(mockDatabaseService)
     mockDatabaseService.healthCheck.mockResolvedValue(true)
   })

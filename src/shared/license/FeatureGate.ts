@@ -223,7 +223,7 @@ export class FeatureGate {
   static clearCacheForFeature(feature: string): void {
     // Remove all cache entries for this feature (across all licenses)
     const keysToRemove: string[] = []
-    for (const [key] of this.featureCache) {
+    for (const key of this.featureCache.keys()) {
       if (key.startsWith(`${feature}_`)) {
         keysToRemove.push(key)
       }
