@@ -161,4 +161,4 @@ config/local.json
 
 # Temporary files
 tmp/
-temp/
+temp/*.test.ts

@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid'
 /**
  * Validation rules constants
  */
-const VALIDATION_RULES = {
+export const VALIDATION_RULES = {
   CONTENT_MAX_LENGTH: 10000,
   OPACITY_MIN: 0,
   OPACITY_MAX: 1,
@@ -251,7 +251,7 @@ export class DatabaseService {
         }
       })
 
-      return records.map(record => this.recordToMemo(record))
+      return records.map((record: any) => this.recordToMemo(record))
     } catch (error) {
       throw new DatabaseError('READ_FAILED', 'Failed to get all memos', error)
     }
@@ -476,7 +476,26 @@ export class DatabaseService {
   /**
    * Convert database record to Memo object
    */
-  private recordToMemo(record: any): Memo {
+  private recordToMemo(record: { 
+    id: string; 
+    content: string; 
+    x: number; 
+    y: number; 
+    width: number; 
+    height: number; 
+    opacity: number; 
+    alwaysOnTop: boolean; 
+    pinned: boolean; 
+    priority: number; 
+    backgroundColor: string; 
+    textColor: string; 
+    fontSize: number; 
+    dueDate: Date | null; 
+    tags: string; 
+    createdAt: Date; 
+    updatedAt: Date; 
+    isDeleted: boolean; 
+  }): Memo {
     return {
       id: record.id,
       content: record.content,
@@ -491,7 +510,7 @@ export class DatabaseService {
       backgroundColor: record.backgroundColor,
       textColor: record.textColor,
       fontSize: record.fontSize,
-      dueDate: record.dueDate,
+      dueDate: record.dueDate || undefined,
       tags: record.tags ? JSON.parse(record.tags) : [],
       createdAt: new Date(record.createdAt),
       updatedAt: new Date(record.updatedAt),

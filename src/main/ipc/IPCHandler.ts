@@ -1,6 +1,7 @@
 import { ipcMain, IpcMainInvokeEvent } from 'electron'
 import { DatabaseService } from '../database/DatabaseService'
-import { CreateMemoInput, UpdateMemoInput, IPCResponse, IPC_CHANNELS } from '../../shared/types'
+import { LicenseService } from '../license/LicenseService'
+import { CreateMemoInput, UpdateMemoInput, IPCResponse, IPC_CHANNELS, LicenseActivationRequest } from '../../shared/types'
 
 /**
  * IPC error codes for structured error handling
@@ -21,10 +22,12 @@ export enum IPCErrorCode {
  */
 export class IPCHandler {
   private databaseService: DatabaseService
+  private licenseService: LicenseService
   private authorizedChannels: Set<string>
 
-  constructor(databaseService: DatabaseService) {
+  constructor(databaseService: DatabaseService, licenseService: LicenseService) {
     this.databaseService = databaseService
+    this.licenseService = licenseService
     this.authorizedChannels = new Set([
       IPC_CHANNELS.MEMO_CREATE,
       IPC_CHANNELS.MEMO_GET_BY_ID,
@@ -35,7 +38,14 @@ export class IPCHandler {
       IPC_CHANNELS.SYSTEM_GET_DISPLAYS,
       IPC_CHANNELS.SYSTEM_SHOW_NOTIFICATION,
       IPC_CHANNELS.SETTINGS_GET,
-      IPC_CHANNELS.SETTINGS_UPDATE
+      IPC_CHANNELS.SETTINGS_UPDATE,
+      IPC_CHANNELS.LICENSE_GET_INFO,
+      IPC_CHANNELS.LICENSE_ACTIVATE,
+      IPC_CHANNELS.LICENSE_DEACTIVATE,
+      IPC_CHANNELS.LICENSE_VALIDATE,
+      IPC_CHANNELS.LICENSE_CHECK_FEATURE,
+      IPC_CHANNELS.LICENSE_GET_LIMIT_STATUS,
+      IPC_CHANNELS.LICENSE_CAN_CREATE_MEMO
     ])
   }
 
@@ -59,6 +69,15 @@ export class IPCHandler {
       // Register settings operation handlers
       ipcMain.handle(IPC_CHANNELS.SETTINGS_GET, this.handleSettingsGet.bind(this))
       ipcMain.handle(IPC_CHANNELS.SETTINGS_UPDATE, this.handleSettingsUpdate.bind(this))
+
+      // Register license operation handlers
+      ipcMain.handle(IPC_CHANNELS.LICENSE_GET_INFO, this.handleLicenseGetInfo.bind(this))
+      ipcMain.handle(IPC_CHANNELS.LICENSE_ACTIVATE, this.handleLicenseActivate.bind(this))
+      ipcMain.handle(IPC_CHANNELS.LICENSE_DEACTIVATE, this.handleLicenseDeactivate.bind(this))
+      ipcMain.handle(IPC_CHANNELS.LICENSE_VALIDATE, this.handleLicenseValidate.bind(this))
+      ipcMain.handle(IPC_CHANNELS.LICENSE_CHECK_FEATURE, this.handleLicenseCheckFeature.bind(this))
+      ipcMain.handle(IPC_CHANNELS.LICENSE_GET_LIMIT_STATUS, this.handleLicenseGetLimitStatus.bind(this))
+      ipcMain.handle(IPC_CHANNELS.LICENSE_CAN_CREATE_MEMO, this.handleLicenseCanCreateMemo.bind(this))
 
       console.log('IPC handlers initialized successfully')
     } catch (error) {
@@ -108,7 +127,7 @@ export class IPCHandler {
   /**
    * Handle memo creation
    */
-  async handleMemoCreate(event: IpcMainInvokeEvent, input: CreateMemoInput): Promise<IPCResponse> {
+  async handleMemoCreate(_event: IpcMainInvokeEvent, input: CreateMemoInput): Promise<IPCResponse> {
     try {
       // Validate input
       this.validateInput(input, ['content', 'x', 'y'])
@@ -126,7 +145,7 @@ export class IPCHandler {
   /**
    * Handle get memo by ID
    */
-  async handleMemoGetById(event: IpcMainInvokeEvent, id: string): Promise<IPCResponse> {
+  async handleMemoGetById(_event: IpcMainInvokeEvent, id: string): Promise<IPCResponse> {
     try {
       // Validate ID parameter
       if (!id || typeof id !== 'string') {
@@ -146,7 +165,7 @@ export class IPCHandler {
   /**
    * Handle get all memos
    */
-  async handleMemoGetAll(event: IpcMainInvokeEvent): Promise<IPCResponse> {
+  async handleMemoGetAll(_event: IpcMainInvokeEvent): Promise<IPCResponse> {
     try {
       // Call database service
       const memos = await this.databaseService.getAllMemos()
@@ -161,7 +180,7 @@ export class IPCHandler {
   /**
    * Handle memo update
    */
-  async handleMemoUpdate(event: IpcMainInvokeEvent, data: { id: string } & UpdateMemoInput): Promise<IPCResponse> {
+  async handleMemoUpdate(_event: IpcMainInvokeEvent, data: { id: string } & UpdateMemoInput): Promise<IPCResponse> {
     try {
       // Validate input
       if (!data || !data.id) {
@@ -184,7 +203,7 @@ export class IPCHandler {
   /**
    * Handle memo deletion
    */
-  async handleMemoDelete(event: IpcMainInvokeEvent, id: string): Promise<IPCResponse> {
+  async handleMemoDelete(_event: IpcMainInvokeEvent, id: string): Promise<IPCResponse> {
     try {
       // Validate ID parameter
       if (!id || typeof id !== 'string') {
@@ -204,7 +223,7 @@ export class IPCHandler {
   /**
    * Handle get memo count
    */
-  async handleMemoGetCount(event: IpcMainInvokeEvent): Promise<IPCResponse> {
+  async handleMemoGetCount(_event: IpcMainInvokeEvent): Promise<IPCResponse> {
     try {
       // Call database service
       const count = await this.databaseService.getMemoCount()
@@ -221,7 +240,7 @@ export class IPCHandler {
   /**
    * Handle get system displays
    */
-  async handleSystemGetDisplays(event: IpcMainInvokeEvent): Promise<IPCResponse> {
+  async handleSystemGetDisplays(_event: IpcMainInvokeEvent): Promise<IPCResponse> {
     try {
       // TODO: Implement display detection
       return this.formatSuccessResponse([])
@@ -233,7 +252,7 @@ export class IPCHandler {
   /**
    * Handle show system notification
    */
-  async handleSystemShowNotification(event: IpcMainInvokeEvent, request: any): Promise<IPCResponse> {
+  async handleSystemShowNotification(_event: IpcMainInvokeEvent, _request: any): Promise<IPCResponse> {
     try {
       // TODO: Implement notification display
       return this.formatSuccessResponse(undefined)
@@ -247,7 +266,7 @@ export class IPCHandler {
   /**
    * Handle get settings
    */
-  async handleSettingsGet(event: IpcMainInvokeEvent): Promise<IPCResponse> {
+  async handleSettingsGet(_event: IpcMainInvokeEvent): Promise<IPCResponse> {
     try {
       // TODO: Implement settings retrieval
       return this.formatSuccessResponse({})
@@ -259,12 +278,106 @@ export class IPCHandler {
   /**
    * Handle update settings
    */
-  async handleSettingsUpdate(event: IpcMainInvokeEvent, settings: any): Promise<IPCResponse> {
+  async handleSettingsUpdate(_event: IpcMainInvokeEvent, _settings: any): Promise<IPCResponse> {
     try {
       // TODO: Implement settings update
-      return this.formatSuccessResponse(settings)
+      return this.formatSuccessResponse(_settings)
     } catch (error) {
       return this.formatErrorResponse(error, 'settings:update')
+    }
+  }
+
+  // License operation handlers
+
+  /**
+   * Handle get license info
+   */
+  async handleLicenseGetInfo(_event: IpcMainInvokeEvent): Promise<IPCResponse> {
+    try {
+      const licenseInfo = await this.licenseService.getLicenseInfo()
+      return this.formatSuccessResponse(licenseInfo)
+    } catch (error) {
+      return this.formatErrorResponse(error, 'license:getInfo')
+    }
+  }
+
+  /**
+   * Handle license activation
+   */
+  async handleLicenseActivate(_event: IpcMainInvokeEvent, request: LicenseActivationRequest): Promise<IPCResponse> {
+    try {
+      // Validate input
+      this.validateInput(request, ['licenseKey', 'deviceId'])
+      
+      const result = await this.licenseService.activateLicense(request)
+      return this.formatSuccessResponse(result)
+    } catch (error) {
+      return this.formatErrorResponse(error, 'license:activate')
+    }
+  }
+
+  /**
+   * Handle license deactivation
+   */
+  async handleLicenseDeactivate(_event: IpcMainInvokeEvent): Promise<IPCResponse> {
+    try {
+      await this.licenseService.deactivateLicense()
+      return this.formatSuccessResponse(undefined)
+    } catch (error) {
+      return this.formatErrorResponse(error, 'license:deactivate')
+    }
+  }
+
+  /**
+   * Handle license validation
+   */
+  async handleLicenseValidate(_event: IpcMainInvokeEvent): Promise<IPCResponse> {
+    try {
+      const result = await this.licenseService.validateLicense()
+      return this.formatSuccessResponse(result)
+    } catch (error) {
+      return this.formatErrorResponse(error, 'license:validate')
+    }
+  }
+
+  /**
+   * Handle feature availability check
+   */
+  async handleLicenseCheckFeature(_event: IpcMainInvokeEvent, feature: string): Promise<IPCResponse> {
+    try {
+      // Validate feature parameter
+      if (!feature || typeof feature !== 'string') {
+        throw new Error('Validation error: feature name is required and must be string')
+      }
+      
+      const availability = await this.licenseService.checkFeatureAvailability(feature)
+      return this.formatSuccessResponse(availability)
+    } catch (error) {
+      return this.formatErrorResponse(error, 'license:checkFeature')
+    }
+  }
+
+  /**
+   * Handle get memo limit status
+   */
+  async handleLicenseGetLimitStatus(_event: IpcMainInvokeEvent): Promise<IPCResponse> {
+    try {
+      const status = await this.licenseService.getMemoLimitStatus()
+      return this.formatSuccessResponse(status)
+    } catch (error) {
+      return this.formatErrorResponse(error, 'license:getLimitStatus')
+    }
+  }
+
+  /**
+   * Handle can create memo check
+   */
+  async handleLicenseCanCreateMemo(_event: IpcMainInvokeEvent): Promise<IPCResponse> {
+    try {
+      const canCreate = await this.licenseService.canCreateMemo()
+      return this.formatSuccessResponse(canCreate)
+    } catch (error) {
+      return this.formatErrorResponse(error, 'license:canCreateMemo')
     }
   }
 

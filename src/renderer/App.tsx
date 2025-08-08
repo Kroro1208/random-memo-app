@@ -2,7 +2,6 @@
  * Main React App Component
  */
 
-import React from 'react';
 
 function App() {
   return (

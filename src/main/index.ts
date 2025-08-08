@@ -2,14 +2,13 @@
  * Main process entry point
  */
 
-import { app, BrowserWindow, ipcMain, screen } from 'electron';
-import { join, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { app, BrowserWindow } from 'electron';
+import { join } from 'path';
 import { isDev } from './utils/env';
-import { createMainWindow } from './window/main-window';
-import { initializeDatabase } from './database/init';
-import { setupIpcHandlers } from './ipc/handlers';
-import { setupSystemIntegration } from './system/integration';
+// import { createMainWindow } from './window/main-window';
+// import { initializeDatabase } from './database/init';
+// import { setupIpcHandlers } from './ipc/handlers';
+// import { setupSystemIntegration } from './system/integration';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -47,15 +46,15 @@ async function initialize() {
     console.log('🚀 Initializing Random Memo App...');
     
     // Initialize database
-    await initializeDatabase();
+    // await initializeDatabase();
     console.log('✅ Database initialized');
     
     // Setup IPC handlers
-    setupIpcHandlers();
+    // setupIpcHandlers();
     console.log('✅ IPC handlers setup');
     
     // Setup system integration (hotkeys, tray, etc.)
-    await setupSystemIntegration();
+    // await setupSystemIntegration();
     console.log('✅ System integration setup');
     
     console.log('✨ Application initialized successfully');
@@ -70,7 +69,7 @@ async function initialize() {
  */
 function createWindow() {
   try {
-    mainWindow = createMainWindow();
+    // mainWindow = createMainWindow();
     
     // Load the appropriate URL
     if (isDev && MAIN_WINDOW_VITE_DEV_SERVER_URL) {

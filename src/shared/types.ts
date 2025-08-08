@@ -31,7 +31,7 @@ export interface SystemInfo {
   platform: NodeJS.Platform;
   arch: string;
   version: string;
-  displays: DisplayInfo[];
+  displays: any[];
 }
 
 // IPC Communication types
@@ -69,6 +69,15 @@ export const IPC_CHANNELS = {
   SETTINGS_UPDATE: 'settings:update',
   SETTINGS_RESET: 'settings:reset',
   
+  // License operations
+  LICENSE_GET_INFO: 'license:getInfo',
+  LICENSE_ACTIVATE: 'license:activate',
+  LICENSE_DEACTIVATE: 'license:deactivate',
+  LICENSE_VALIDATE: 'license:validate',
+  LICENSE_CHECK_FEATURE: 'license:checkFeature',
+  LICENSE_GET_LIMIT_STATUS: 'license:getLimitStatus',
+  LICENSE_CAN_CREATE_MEMO: 'license:canCreateMemo',
+  
   // Events (from main to renderer)
   EVENT_MEMO_CREATED: 'event:memoCreated',
   EVENT_MEMO_UPDATED: 'event:memoUpdated',
@@ -76,4 +85,6 @@ export const IPC_CHANNELS = {
   EVENT_HOTKEY_PRESSED: 'event:hotkeyPressed',
   EVENT_SETTINGS_CHANGED: 'event:settingsChanged',
   EVENT_THEME_CHANGED: 'event:themeChanged',
+  EVENT_LICENSE_CHANGED: 'event:licenseChanged',
+  EVENT_LIMIT_STATUS_CHANGED: 'event:limitStatusChanged',
 } as const;

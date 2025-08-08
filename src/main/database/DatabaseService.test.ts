@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeAll, afterAll, beforeEach } from 'vitest'
 import { DatabaseService } from './DatabaseService'
-import { CreateMemoInput, Memo } from '../../shared/types'
+import { CreateMemoInput } from '../../shared/types'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -361,19 +361,3 @@ describe('DatabaseService', () => {
   })
 })
 
-// Test data helpers
-const testDataHelpers = {
-  validMemoInput: (): CreateMemoInput => ({
-    content: "Test memo content",
-    x: Math.floor(Math.random() * 1000),
-    y: Math.floor(Math.random() * 1000),
-    width: 200,
-    height: 150,
-    opacity: 0.9,
-    priority: 3,
-    backgroundColor: "#ffeb3b",
-    textColor: "#333333",
-    fontSize: 14,
-    tags: ["test"]
-  })
-}
