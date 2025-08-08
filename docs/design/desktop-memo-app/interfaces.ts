@@ -90,7 +90,6 @@ export interface CreateMemoInput {
  * メモ更新用の部分データ
  */
 export interface UpdateMemoInput {
-  id: string;
   content?: string;
   x?: number;
   y?: number;
@@ -219,50 +218,7 @@ export interface AppSettings {
 // IPC Communication Types
 // ============================================================================
 
-/**
- * IPC通信の基本レスポンス形式
- */
-export interface IPCResponse<T = any> {
-  success: boolean;
-  data?: T;
-  error?: {
-    code: string;
-    message: string;
-    details?: any;
-  };
-}
-
-/**
- * メモ操作のIPCチャンネル名
- */
-export const IPC_CHANNELS = {
-  // Memo operations
-  MEMO_CREATE: 'memo:create',
-  MEMO_UPDATE: 'memo:update',
-  MEMO_DELETE: 'memo:delete',
-  MEMO_GET_ALL: 'memo:getAll',
-  MEMO_GET_BY_ID: 'memo:getById',
-  MEMO_UPDATE_POSITION: 'memo:updatePosition',
-  MEMO_AUTO_ARRANGE: 'memo:autoArrange',
-  
-  // System operations
-  SYSTEM_GET_DISPLAYS: 'system:getDisplays',
-  SYSTEM_SHOW_NOTIFICATION: 'system:showNotification',
-  SYSTEM_SET_HOTKEYS: 'system:setHotkeys',
-  
-  // Settings operations
-  SETTINGS_GET: 'settings:get',
-  SETTINGS_UPDATE: 'settings:update',
-  SETTINGS_RESET: 'settings:reset',
-  
-  // Events (from main to renderer)
-  EVENT_MEMO_CREATED: 'event:memoCreated',
-  EVENT_MEMO_UPDATED: 'event:memoUpdated',
-  EVENT_MEMO_DELETED: 'event:memoDeleted',
-  EVENT_HOTKEY_PRESSED: 'event:hotkeyPressed',
-  EVENT_SETTINGS_CHANGED: 'event:settingsChanged',
-  EVENT_THEME_CHANGED: 'event:themeChanged',
-} as const;
+// IPC関連の型は shared/types.ts で定義
 
 /**
  * ホットキーイベント
@@ -360,19 +316,6 @@ export type AppErrorCode =
   | 'SYSTEM_INTEGRATION_ERROR'
   | 'UNKNOWN_ERROR';
 
-/**
- * アプリケーションエラー
- */
-export class AppError extends Error {
-  constructor(
-    public code: AppErrorCode,
-    message: string,
-    public details?: any
-  ) {
-    super(message);
-    this.name = 'AppError';
-  }
-}
 
 // ============================================================================
 // Validation Types
@@ -648,70 +591,6 @@ export interface FeatureGateProps {
 }
 
 // ============================================================================
-// Export all types for easy importing
+// All types are automatically exported and can be imported individually
+// Constants and additional types are defined in shared/types.ts
 // ============================================================================
-
-export type {
-  // Core entities
-  Memo,
-  CreateMemoInput,
-  UpdateMemoInput,
-  
-  // Position and layout
-  Position,
-  Size,
-  Rectangle,
-  DisplayInfo,
-  DragState,
-  
-  // UI and settings
-  ThemeMode,
-  MemoDisplayMode,
-  PriorityColorScheme,
-  UIPreferences,
-  HotKeyConfig,
-  AppSettings,
-  
-  // IPC communication
-  IPCResponse,
-  HotKeyEvent,
-  NotificationRequest,
-  
-  // Search and filter
-  SearchQuery,
-  SearchResult,
-  
-  // Animation and effects
-  AnimationConfig,
-  PreviewConfig,
-  
-  // Database
-  MemoRecord,
-  DatabaseResult,
-  
-  // Validation
-  ValidationRule,
-  ValidationResult,
-  
-  // Utility types
-  DeepPartial,
-  RequiredOnly,
-  WithId,
-  WithTimestamp,
-  
-  // License and monetization
-  LicenseType,
-  License,
-  LicenseLimits,
-  LicenseValidationResult,
-  LicenseActivationRequest,
-  FeatureAvailability,
-  MemoLimitStatus,
-  UpgradePromptConfig,
-  LicenseAwareMemoStore,
-  FeatureGateProps,
-};
-
-// Export constants
-export { IPC_CHANNELS, AppError };
-export type { AppErrorCode };
