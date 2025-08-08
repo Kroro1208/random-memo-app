@@ -4,7 +4,7 @@ import { CreateMemoInput, UpdateMemoInput, IPCResponse, IPC_CHANNELS } from '../
 /**
  * Electron API interface exposed to renderer process
  */
-interface ElectronAPI {
+export interface ElectronAPI {
   // Memo operations
   memos: {
     create(input: CreateMemoInput): Promise<IPCResponse>
@@ -25,6 +25,17 @@ interface ElectronAPI {
   settings: {
     get(): Promise<IPCResponse>
     update(settings: any): Promise<IPCResponse>
+  }
+
+  // License operations  
+  license: {
+    getInfo(): Promise<IPCResponse>
+    activate(request: any): Promise<IPCResponse>
+    deactivate(): Promise<IPCResponse>
+    validate(): Promise<IPCResponse>
+    checkFeature(feature: string): Promise<IPCResponse>
+    getLimitStatus(): Promise<IPCResponse>
+    canCreateMemo(): Promise<IPCResponse>
   }
   
   // Event listeners
@@ -131,6 +142,57 @@ const electronAPI: ElectronAPI = {
       
       // Call IPC invoke
       return await ipcRenderer.invoke(IPC_CHANNELS.SETTINGS_UPDATE, settings)
+    }
+  },
+
+  // License operations
+  license: {
+    async getInfo(): Promise<IPCResponse> {
+      // Call IPC invoke
+      return await ipcRenderer.invoke(IPC_CHANNELS.LICENSE_GET_INFO)
+    },
+
+    async activate(request: any): Promise<IPCResponse> {
+      // Validate activation request
+      if (!request || typeof request !== 'object') {
+        throw new Error('Invalid parameters: activation request is required')
+      }
+      if (!request.licenseKey || !request.deviceId) {
+        throw new Error('Invalid parameters: licenseKey and deviceId are required')
+      }
+      
+      // Call IPC invoke
+      return await ipcRenderer.invoke(IPC_CHANNELS.LICENSE_ACTIVATE, request)
+    },
+
+    async deactivate(): Promise<IPCResponse> {
+      // Call IPC invoke
+      return await ipcRenderer.invoke(IPC_CHANNELS.LICENSE_DEACTIVATE)
+    },
+
+    async validate(): Promise<IPCResponse> {
+      // Call IPC invoke
+      return await ipcRenderer.invoke(IPC_CHANNELS.LICENSE_VALIDATE)
+    },
+
+    async checkFeature(feature: string): Promise<IPCResponse> {
+      // Validate feature parameter
+      if (!feature || typeof feature !== 'string' || feature.trim() === '') {
+        throw new Error('Invalid parameters: feature name is required and must be non-empty string')
+      }
+      
+      // Call IPC invoke
+      return await ipcRenderer.invoke(IPC_CHANNELS.LICENSE_CHECK_FEATURE, feature)
+    },
+
+    async getLimitStatus(): Promise<IPCResponse> {
+      // Call IPC invoke
+      return await ipcRenderer.invoke(IPC_CHANNELS.LICENSE_GET_LIMIT_STATUS)
+    },
+
+    async canCreateMemo(): Promise<IPCResponse> {
+      // Call IPC invoke
+      return await ipcRenderer.invoke(IPC_CHANNELS.LICENSE_CAN_CREATE_MEMO)
     }
   },
 
